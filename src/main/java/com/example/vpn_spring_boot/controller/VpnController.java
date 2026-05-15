@@ -4,6 +4,7 @@ import com.example.vpn_spring_boot.model.User;
 import com.example.vpn_spring_boot.service.VpnSessionService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,9 @@ public class VpnController {
     @PostMapping("/connect")
     public ResponseEntity<Void> connect(@AuthenticationPrincipal User user,
                                         HttpServletRequest request) {
+        if (user.isSuspended()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         vpnSessionService.connect(user, resolveIp(request));
         return ResponseEntity.ok().build();
     }

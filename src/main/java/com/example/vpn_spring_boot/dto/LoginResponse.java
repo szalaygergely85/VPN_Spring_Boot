@@ -8,5 +8,8 @@ public record LoginResponse(
     String token,
     String refreshToken,
     long tokenExpiresAt,
-    WireGuardServerConfig serverConfig
+    WireGuardServerConfig serverConfig,
+    long monthlyLimitBytes,
+    long monthlyUsedBytes,
+    boolean suspended
 ) {}

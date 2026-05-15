@@ -52,6 +52,9 @@ public class AuthService implements UserDetailsService {
     @Value("${wireguard.vpn.cidr}")
     private String vpnCidr;
 
+    @Value("${traffic.monthly-limit-bytes:53687091200}") // 50 GB default
+    private long monthlyLimitBytes;
+
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -73,6 +76,7 @@ public class AuthService implements UserDetailsService {
         user.setVpnPublicKey(keys.publicKey());
         user.setVpnAddress(vpnAddress);
         user.setVpnIpOctet(nextOctet);
+        user.setBytesLimit(monthlyLimitBytes);
 
         User saved = userRepository.save(user);
         String token = jwtUtil.generateToken(saved.getEmail());
@@ -92,7 +96,10 @@ public class AuthService implements UserDetailsService {
             token,
             refreshToken,
             jwtUtil.expiresAt(),
-            serverConfig()
+            serverConfig(),
+            saved.getBytesLimit(),
+            0L,
+            false
         );
     }
 
@@ -122,7 +129,10 @@ public class AuthService implements UserDetailsService {
             token,
             refreshToken,
             jwtUtil.expiresAt(),
-            serverConfig()
+            serverConfig(),
+            user.getBytesLimit(),
+            user.getMonthlyRxBytes() + user.getMonthlyTxBytes(),
+            user.isSuspended()
         );
     }
 
