@@ -6,5 +6,7 @@ public record LoginResponse(
     String vpnPrivateKey,
     String vpnAddress,
     String token,
+    String refreshToken,
+    long tokenExpiresAt,
     WireGuardServerConfig serverConfig
 ) {}

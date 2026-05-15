@@ -58,7 +58,20 @@ public class WireGuardSshService {
         }
     }
 
+    public String showDump() {
+        try {
+            return execWithOutput("sudo -n " + wgBin + " show " + wgInterface + " dump");
+        } catch (Exception e) {
+            log.error("Failed to run wg show dump: {}", e.getMessage());
+            return "";
+        }
+    }
+
     private void exec(String command) throws Exception {
+        execWithOutput(command);
+    }
+
+    private String execWithOutput(String command) throws Exception {
         Session session = null;
         ChannelExec channel = null;
         try {
@@ -76,13 +89,18 @@ public class WireGuardSshService {
             InputStream in = channel.getInputStream();
             channel.connect(10_000);
 
-            byte[] buf = new byte[1024];
-            while (in.read(buf) != -1) { /* drain */ }
+            StringBuilder sb = new StringBuilder();
+            byte[] buf = new byte[4096];
+            int len;
+            while ((len = in.read(buf)) != -1) {
+                sb.append(new String(buf, 0, len));
+            }
 
             int exit = channel.getExitStatus();
             if (exit != 0) {
                 throw new RuntimeException("Command exited with code " + exit + ": " + command);
             }
+            return sb.toString();
         } finally {
             if (channel != null) channel.disconnect();
             if (session != null) session.disconnect();

@@ -32,6 +32,10 @@ public class JwtUtil {
             .compact();
     }
 
+    public long expiresAt() {
+        return System.currentTimeMillis() + expirationMs;
+    }
+
     public String extractEmail(String token) {
         return Jwts.parser()
             .verifyWith(key)

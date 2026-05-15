@@ -42,6 +42,18 @@ public class User implements UserDetails {
     private boolean peerSynced = false;
 
     @Column(nullable = false)
+    private boolean suspended = false;
+
+    @Column(nullable = false)
+    private long rxBytes = 0;
+
+    @Column(nullable = false)
+    private long txBytes = 0;
+
+    @Column
+    private LocalDateTime lastSeen;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Override
