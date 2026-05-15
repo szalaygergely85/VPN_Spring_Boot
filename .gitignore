@@ -37,3 +37,4 @@ out/
 .vscode/
 vpn_server_key
 vpn_server_key.pub
+.env
