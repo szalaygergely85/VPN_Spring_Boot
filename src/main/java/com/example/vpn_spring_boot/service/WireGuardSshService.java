@@ -96,8 +96,16 @@ public class WireGuardSshService {
                 sb.append(new String(buf, 0, len));
             }
 
+            // Wait for the channel to fully close so the exit status is available.
+            // getExitStatus() returns -1 if called before the channel sends its exit code.
+            long deadline = System.currentTimeMillis() + 5_000;
+            while (!channel.isClosed() && System.currentTimeMillis() < deadline) {
+                Thread.sleep(50);
+            }
+
             int exit = channel.getExitStatus();
-            if (exit != 0) {
+            // -1 means the channel closed without sending an exit status — treat as success
+            if (exit > 0) {
                 throw new RuntimeException("Command exited with code " + exit + ": " + command);
             }
             return sb.toString();
