@@ -13,8 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -26,6 +29,16 @@ public class UserController {
     private final VpnSessionRepository vpnSessionRepository;
     private final AuditLogRepository auditLogRepository;
     private final WireGuardSshService wireGuardSshService;
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getMe(@AuthenticationPrincipal User user) {
+        long used = user.getMonthlyRxBytes() + user.getMonthlyTxBytes();
+        return ResponseEntity.ok(Map.of(
+            "monthlyUsedBytes", used,
+            "monthlyLimitBytes", user.getBytesLimit(),
+            "suspended", user.isSuspended()
+        ));
+    }
 
     @DeleteMapping("/me")
     @Transactional

@@ -3,6 +3,7 @@ package com.example.vpn_spring_boot.service;
 import com.example.vpn_spring_boot.dto.*;
 import com.example.vpn_spring_boot.model.RefreshToken;
 import com.example.vpn_spring_boot.model.User;
+import com.example.vpn_spring_boot.repository.RefreshTokenRepository;
 import com.example.vpn_spring_boot.repository.UserRepository;
 import com.example.vpn_spring_boot.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class AuthService implements UserDetailsService {
     private final WireGuardKeyService wireGuardKeyService;
     private final WireGuardSshService wireGuardSshService;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final CryptoService cryptoService;
     private final VpnSessionService vpnSessionService;
     private final JwtUtil jwtUtil;
@@ -101,6 +103,11 @@ public class AuthService implements UserDetailsService {
             0L,
             false
         );
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        refreshTokenRepository.revokeByToken(refreshToken);
     }
 
     public RefreshResponse refresh(RefreshRequest request) {

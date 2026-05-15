@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +46,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean suspended = false;
 
+    @Column(nullable = false)
+    private boolean admin = false;
+
     // Raw live values from the last wg show dump (for admin display + delta tracking)
     @Column(nullable = false)
     private long rxBytes = 0;
@@ -77,7 +82,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return admin ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN")) : List.of();
     }
 
     @Override

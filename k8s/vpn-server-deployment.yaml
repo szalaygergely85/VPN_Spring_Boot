@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vpn-server
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpn-server
+  template:
+    metadata:
+      labels:
+        app: vpn-server
+    spec:
+      containers:
+        - name: vpn-server
+          image: gery12492/vpn-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vpn-server-secret
+                  key: DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: vpn-server-secret
+                  key: JWT_SECRET
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vpn-server-secret
+                  key: ENCRYPTION_KEY
+            - name: WG_SSH_KEY_PATH
+              value: /app/ssh/vpn_server_key
+          volumeMounts:
+            - name: ssh-key
+              mountPath: /app/ssh
+              readOnly: true
+      volumes:
+        - name: ssh-key
+          secret:
+            secretName: vpn-server-ssh-key
+            defaultMode: 0400
