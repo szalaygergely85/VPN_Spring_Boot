@@ -1,0 +1,10 @@
+package com.example.vpn_spring_boot.dto;
+
+public record LoginResponse(
+    String id,
+    String email,
+    String vpnPrivateKey,
+    String vpnAddress,
+    String token,
+    WireGuardServerConfig serverConfig
+) {}
