@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface VpnSessionRepository extends JpaRepository<VpnSession, Long> {
     Optional<VpnSession> findTopByUserAndDisconnectedAtIsNullOrderByConnectedAtDesc(User user);
     List<VpnSession> findTop20ByOrderByConnectedAtDesc();
+    void deleteAllByUser(User user);
 }
