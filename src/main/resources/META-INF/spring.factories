@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.example.vpn_spring_boot.config.DotenvPostProcessor
