@@ -59,7 +59,7 @@ jobs:
 
       - name: Create SSH key secret
         run: |
-          echo "${{ secrets.WG_SSH_KEY }}" | base64 -d > vpn_server_key
+          printf '%s' "${{ secrets.WG_SSH_KEY }}" | base64 -d --ignore-garbage > vpn_server_key
           kubectl create secret generic vpn-server-ssh-key \
             --from-file=vpn_server_key \
             --dry-run=client -o yaml | kubectl apply -f -
