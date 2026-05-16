@@ -52,6 +52,7 @@ jobs:
       - name: Create app secrets
         run: |
           kubectl create secret generic vpn-server-secret \
+            --from-literal=DB_USER=${{ secrets.DB_USER }} \
             --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --from-literal=JWT_SECRET=${{ secrets.JWT_SECRET }} \
             --from-literal=ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
